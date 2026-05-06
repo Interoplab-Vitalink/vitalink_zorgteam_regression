@@ -387,23 +387,6 @@ synology-jenkins-agent-zorgteam
 
 The node name alone is not always enough. The label field must contain the value used by the `Jenkinsfile`.
 
-### All API tests fail with `401 invalid_token`
-
-Check the `VO_ZORGTEAM_API_TOKEN` parameter.
-
-The token must be the complete JWT. A valid JWT normally starts with:
-
-```text
-eyJ
-```
-
-If the first character is missing, the API returns:
-
-```text
-401 invalid_token
-Malformed token
-```
-
 ### Token expires during or before the run
 
 JWTs and patient pseudo values can be time-limited. Generate fresh values before starting a Jenkins build.
