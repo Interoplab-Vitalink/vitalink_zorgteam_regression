@@ -1,0 +1,14 @@
+{
+  "patientSsin": "{{patient1_pseudo}}",
+  "member": {
+    "memberFunction": "member",
+    "actor": {
+      "hcpType": "Organization",
+      "nihdi": "95310418",
+      "name": "Smals-hospital",
+      "organizationType": "Revalidatieovereenkomsten",
+      "hco": "29620",
+      "hcoAuthenticSource": "WVG_VAZG"
+    }
+  }
+}

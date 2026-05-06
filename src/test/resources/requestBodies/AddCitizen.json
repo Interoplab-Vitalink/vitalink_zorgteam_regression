@@ -1,0 +1,10 @@
+{
+  "patientSsin": "{{patient1_pseudo}}",
+  "member": {
+    "memberFunction": "member",
+    "actor": {
+      "hcpType": "Citizen",
+      "ssin": "88052429394"
+    }
+  }
+}

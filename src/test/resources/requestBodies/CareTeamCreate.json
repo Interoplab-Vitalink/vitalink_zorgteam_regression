@@ -1,0 +1,5 @@
+{
+  "patientSsin": "{{patient1_pseudo}}",
+  "type": "ALIVIA",
+  "status": "proposed"
+}

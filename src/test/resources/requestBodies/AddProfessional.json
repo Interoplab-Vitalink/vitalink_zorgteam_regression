@@ -1,0 +1,11 @@
+{
+  "patientSsin": "{{patient1_pseudo}}",
+  "member": {
+    "memberFunction": "member",
+    "actor": {
+      "hcpType": "Professional",
+      "nihdi": "19591129004",
+      "professionType": "PHYSICIAN"
+    }
+  }
+}
