@@ -488,16 +488,3 @@ If enabled, Jenkins needs:
   ```text
   dockerhub-interoplabvitalink
   ```
-
-## Current Known Good Jenkins Run
-
-A remote Jenkins run with direct parameters completed successfully:
-
-```text
-Build #6
-Result: SUCCESS
-Tests run: 9
-Failures: 0
-Errors: 0
-Skipped: 0
-```
