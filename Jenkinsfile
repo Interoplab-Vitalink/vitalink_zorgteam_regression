@@ -20,19 +20,19 @@ pipeline {
             description: 'Optional Cucumber tag expression. Leave empty to use runner defaults.'
         )
         string(
-            name: 'VO_ZORGTEAM_API_TOKEN_CREDENTIAL_ID',
+            name: 'VO_ZORGTEAM_API_TOKEN',
             defaultValue: '',
-            description: 'Jenkins Secret Text credential ID for vo-zorgteam-api-token.'
+            description: 'vo-zorgteam-api-token value.'
         )
         string(
-            name: 'PATIENT1_PSEUDO_CREDENTIAL_ID',
+            name: 'PATIENT1_PSEUDO',
             defaultValue: '',
-            description: 'Jenkins Secret Text credential ID for patient1_pseudo.'
+            description: 'patient1_pseudo value.'
         )
         string(
-            name: 'ZORGTEAM_BASE_URL_CREDENTIAL_ID',
+            name: 'ZORGTEAM_BASE_URL',
             defaultValue: '',
-            description: 'Optional Jenkins Secret Text credential ID for the Zorgteam API base URL.'
+            description: 'Optional Zorgteam API base URL.'
         )
         booleanParam(
             name: 'PUBLISH_AGENT_IMAGE',
@@ -73,11 +73,11 @@ pipeline {
                     }
                     def requiredVars = [
                         'VO_ZORGTEAM_API_TOKEN': [
-                            credentialId: params.VO_ZORGTEAM_API_TOKEN_CREDENTIAL_ID?.trim(),
+                            parameterValue: params.VO_ZORGTEAM_API_TOKEN?.trim(),
                             propertyKey: 'properties.vo-zorgteam-api-token'
                         ],
                         'PATIENT1_PSEUDO': [
-                            credentialId: params.PATIENT1_PSEUDO_CREDENTIAL_ID?.trim(),
+                            parameterValue: params.PATIENT1_PSEUDO?.trim(),
                             propertyKey: 'properties.patient1_pseudo'
                         ]
                     ]
@@ -85,26 +85,12 @@ pipeline {
                     // Optional vars: resolved if provided, but won't block the build
                     def optionalVars = [
                         'ZORGTEAM_BASE_URL': [
-                            credentialId: params.ZORGTEAM_BASE_URL_CREDENTIAL_ID?.trim(),
+                            parameterValue: params.ZORGTEAM_BASE_URL?.trim(),
                             propertyKey: 'properties.baseURL.ACC'
                         ]
                     ]
 
                     def allVars = requiredVars + optionalVars
-
-                    def credentialBindings = []
-                    def credentialVarNames = [:]
-                    allVars.each { varName, config ->
-                        def credentialId = config.get('credentialId')
-                        if (credentialId) {
-                            def credentialVarName = "${varName}_FROM_CREDENTIAL"
-                            credentialVarNames.put(varName, credentialVarName)
-                            credentialBindings << string(
-                                    credentialsId: credentialId,
-                                    variable: credentialVarName
-                            )
-                        }
-                    }
 
                     def readEnvValue = { variableName ->
                         sh(
@@ -113,33 +99,22 @@ pipeline {
                         ).trim()
                     }
 
-                    def resolveValues = {
-                        allVars.each { varName, config ->
-                            def resolvedValue = readEnvValue(varName)
-                            def credentialVarName = credentialVarNames.get(varName)
-                            if (!resolvedValue && credentialVarName) {
-                                resolvedValue = readEnvValue(credentialVarName)
-                            }
-                            if (!resolvedValue) {
-                                resolvedValue = propertiesFallback.get(config.get('propertyKey'))?.trim()
-                            }
-                            if (resolvedValue) {
-                                env.setProperty(varName, resolvedValue)
-                            }
+                    allVars.each { varName, config ->
+                        def resolvedValue = readEnvValue(varName)
+                        if (!resolvedValue) {
+                            resolvedValue = config.get('parameterValue')
                         }
-                    }
-
-                    if (credentialBindings) {
-                        withCredentials(credentialBindings) {
-                            resolveValues()
+                        if (!resolvedValue) {
+                            resolvedValue = propertiesFallback.get(config.get('propertyKey'))?.trim()
                         }
-                    } else {
-                        resolveValues()
+                        if (resolvedValue) {
+                            env.setProperty(varName, resolvedValue)
+                        }
                     }
 
                     def missingVars = requiredVars.keySet().findAll { !readEnvValue(it) }
                     if (!missingVars.isEmpty()) {
-                        error("Missing required runtime configuration. Set env vars, provide credential IDs, or populate globals.properties for: ${missingVars.join(', ')}")
+                        error("Missing required runtime configuration. Set env vars, provide Jenkins parameters, or populate globals.properties for: ${missingVars.join(', ')}")
                     }
                 }
             }
