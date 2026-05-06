@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'synology-docker'
+        label 'synology-jenkins-agent-zorgteam'
     }
 
     options {
